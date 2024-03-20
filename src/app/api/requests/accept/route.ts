@@ -40,19 +40,30 @@ export async function POST(req: Request, res: Response) {
       idToAdd
     );
 
-    console.log(hasFriendRequest)
+    console.log(hasFriendRequest);
 
     if (!hasFriendRequest) {
       return new Response("No friend requests", { status: 400 });
     }
 
+    const fetchedData = await fetchRedis("get", `user:${session.user.sub}`) as string;
+    const sender = (await JSON.parse(fetchedData)) as User;
+
+    console.log(sender);
 
     //notify friend that you are now a friend
-    await pusherServer.trigger(toPusherKey(`user:${idToAdd}:friends`) , 'new_friend' , '')
+    await pusherServer.trigger(
+      toPusherKey(`user:${idToAdd}:friends`),
+      "new_friend",
+      sender
+    );
 
     await db.sadd(`user:${session.user.sub}:friends`, idToAdd);
     await db.sadd(`user:${idToAdd}:friends`, session.user.sub);
-    await db.srem(`users:${session.user.sub}:incoming_friend_requests`, idToAdd);
+    await db.srem(
+      `users:${session.user.sub}:incoming_friend_requests`,
+      idToAdd
+    );
 
     console.log("has", hasFriendRequest);
     return new Response("OK");

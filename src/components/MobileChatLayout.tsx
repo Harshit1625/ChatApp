@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 import SideBarList from "./ui/SideBarList";
 import FriendRequestsSideBarOptions from "./FriendRequestsSideBarOptions";
 import SignOutButton from "./ui/SignOutButton";
-import { SideBarOptions } from "@/app/types/typings"; 
+import { SideBarOptions } from "@/app/types/typings";
 
 interface MobileChatLayoutProps {
   friends: RUser[];
@@ -44,7 +44,10 @@ const MobileChatLayout: FC<MobileChatLayoutProps> = ({
           href="/dashboard"
           className={buttonVariants({ variant: "ghost" })}
         >
-          <Icons.Logo className="h-6 w-auto text-indigo-600" />
+          <Icons.Logo className=" h-6 w-auto text-indigo-800 rotate-180" />
+          <h1 className="ml-2 font-semibold text-[15px] text-indigo-800 opacity-80">
+            ChatZone
+          </h1>
         </Link>
         <Button onClick={() => setOpen(true)} className="gap-4">
           Menu <Menu className="h-6 w-6" />
@@ -101,7 +104,7 @@ const MobileChatLayout: FC<MobileChatLayoutProps> = ({
                           >
                             <li>
                               <SideBarList
-                                friendList ={friends}
+                                friendList={friends}
                                 sessionID={session.user.sub}
                               />
                             </li>
@@ -132,9 +135,7 @@ const MobileChatLayout: FC<MobileChatLayoutProps> = ({
 
                                 <li>
                                   <FriendRequestsSideBarOptions
-                                    initialCount={
-                                      unseenRequestCount
-                                    }
+                                    initialCount={unseenRequestCount}
                                     sessionId={session.user.id}
                                   />
                                 </li>

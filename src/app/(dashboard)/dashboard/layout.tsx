@@ -1,3 +1,5 @@
+
+
 import FriendRequestsSideBarOptions from "@/components/FriendRequestsSideBarOptions";
 import { Icon, Icons } from "@/components/Icons";
 import MobileChatLayout from "@/components/MobileChatLayout";
@@ -37,6 +39,8 @@ const sidebarOptions: SidebarOption[] = [
 // const Layout = async ({children} : LayoutProps)=>{}
 
 const Layout = async ({ children }: LayoutProps) => {
+
+  
   const session = await getServerSession(authOptions);
 
   if (!session) notFound();
@@ -61,6 +65,7 @@ const Layout = async ({ children }: LayoutProps) => {
       <div className="hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
         <Link href="/dashboard" className="flex h-16 shrink-0 items-center ">
           <Icons.Logo className="h-8 w-auto text-indigo-800 rotate-180"></Icons.Logo>
+          <h1 className="ml-4 font-semibold text-[15px] text-indigo-800 opacity-80">ChatZone</h1>
         </Link>
         {fetchFriends.length > 0 ? (
           <div className="text-xs text-gray-400 font-semibold leading-6">

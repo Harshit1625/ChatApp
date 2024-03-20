@@ -18,7 +18,7 @@ const FriendRequests: FC<FriendRequestsProps> = ({
   incomingFriendRequests,
   sessionId,
 }) => {
-  const router = useRouter();
+  
   const [friendRequests, setRequests] = useState<IncomingRequests[]>(
     incomingFriendRequests
   );
@@ -65,7 +65,6 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     setRequests((prev) =>
       prev.filter((request) => request.senderId !== senderId)
     );
-
     await reloader();
   };
 

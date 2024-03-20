@@ -20,17 +20,33 @@ interface ExtendedMessage extends Message {
   senderName: string;
 }
 
+
 const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
   const pathname = usePathname();
   const [unseenMsg, setUnseenMsg] = useState<Message[]>([]);
-  console.log(friendList);
+  
 
   useEffect(() => {
     pusherClient.subscribe(toPusherKey(`user:${sessionID}:chats`));
     pusherClient.subscribe(toPusherKey(`user:${sessionID}:friends`));
 
-    const newFriendHandler = () => {
-      location.reload();
+    const newFriendHandler = async (sender : RUser) => {
+      setTimeout(() => {
+        toast.custom((t) => {
+          return (
+            <div className="bg-white rounded-2xl flex align-center justify-center p-3 shadow ">
+              <span className="font-semibold text-indigo-600">
+                {sender.name}
+                </span>
+                <span className="ml-2">
+                  accepted your friend request !!
+                </span>
+            </div>
+          )
+        })
+        location.reload();
+      } , 5000)
+      
     };
 
     const chatHandler = (message: ExtendedMessage) => {
@@ -62,7 +78,9 @@ const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
       pusherClient.unbind("new_message", chatHandler);
       pusherClient.unbind("new_friend", newFriendHandler);
     };
-  }, [sessionID, pathname]);
+  }, [sessionID]);
+
+  
 
   useEffect(() => {
     if (pathname?.includes("chat")) {
@@ -74,7 +92,7 @@ const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
 
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-      {friendList.sort().map((friend) => {
+      {friendList.map((friend) => {
         const unseenMsgCount = unseenMsg.filter((unseenMsg) => {
           return unseenMsg.senderId === friend.id;
         }).length;
