@@ -73,7 +73,7 @@ const Layout = async ({ children }: LayoutProps) => {
           </div>
         ) : null}
         <nav className="flex flex-1 flex-col">
-          <ul role="list" className="flex flex-col flex-1 gap-y-7">
+          <ul role="list" className="flex flex-col flex-1 gap-y-4">
             <li>
               <SideBarList
                 friendList={fetchFriends}
@@ -85,7 +85,7 @@ const Layout = async ({ children }: LayoutProps) => {
                 Overview
               </div>
             </li>
-            <ul role="list" className="-mx-2 mt-2 space-y-1">
+            <ul role="list" className="-mx-2 space-y-1">
               {sidebarOptions.map((option) => {
                 const Icon = Icons[option.Icon];
                 return (

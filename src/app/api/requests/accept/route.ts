@@ -46,8 +46,11 @@ export async function POST(req: Request, res: Response) {
       return new Response("No friend requests", { status: 400 });
     }
 
-    const fetchedData = await fetchRedis("get", `user:${session.user.sub}`) as string;
-    const sender = (await JSON.parse(fetchedData)) as User;
+    const fetchedDataSender = await fetchRedis("get", `user:${session.user.sub}`) as string;
+    const sender = (await JSON.parse(fetchedDataSender)) as RUser;
+
+    const fetchedDataFriend = await fetchRedis("get", `user:${idToAdd}`) as string;
+    const friend = (await JSON.parse(fetchedDataFriend)) as RUser;
 
     console.log(sender);
 
@@ -56,6 +59,11 @@ export async function POST(req: Request, res: Response) {
       toPusherKey(`user:${idToAdd}:friends`),
       "new_friend",
       sender
+    );
+    await pusherServer.trigger(
+      toPusherKey(`user:${session.user.sub}:friends`),
+      "new_friend",
+      friend
     );
 
     await db.sadd(`user:${session.user.sub}:friends`, idToAdd);

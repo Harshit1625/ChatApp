@@ -74,7 +74,6 @@ const FriendRequests: FC<FriendRequestsProps> = ({
     setRequests((prev) =>
       prev.filter((request) => request.senderId !== senderId)
     );
-
     await reloader();
   };
 

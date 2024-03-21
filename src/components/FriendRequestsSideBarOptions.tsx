@@ -22,22 +22,26 @@ const FriendRequestsSideBarOptions: FC<FriendRequestsSideBarOptionsProps> = ({
   sessionId,
   initialCount,
 }) => {
-  console.log(sessionId);
   const [unseenRequestsCount, setunseenRequestsCount] =
     useState<number>(initialCount);
 
   useEffect(() => {
     pusherClient.subscribe(
       toPusherKey(`users:${sessionId}:incoming_friend_requests`)
-    ); 
+    );
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
 
     const friendRequestHandler = (data: ISender) => {
       const { senderEmail, senderName } = data;
       console.log(senderEmail);
+      setunseenRequestsCount((prev) => prev + 1);
       setTimeout(() => {
         toast.custom((t) => {
           return (
-            <Link href={'/dashboard/requests'} className="bg-white rounded-2xl flex align-center justify-center p-4 shadow ">
+            <Link
+              href={"/dashboard/requests"}
+              className="bg-white rounded-2xl flex align-center justify-center p-4 shadow "
+            >
               <span className="font-semibold text-indigo-600">
                 {senderName}
               </span>
@@ -46,18 +50,22 @@ const FriendRequestsSideBarOptions: FC<FriendRequestsSideBarOptionsProps> = ({
           );
         });
       }, 10000);
-      setunseenRequestsCount((prev) => prev + 1);
+    };
+    const friendAddedHandler = () => {
+      setunseenRequestsCount((prev) => prev - 1);
     };
 
     pusherClient.bind("incoming_friend_requests", friendRequestHandler);
+    pusherClient.bind("new_friend", friendAddedHandler);
 
     return () => {
       pusherClient.unsubscribe(
         toPusherKey(`users:${sessionId}:incoming_friend_requests`)
       );
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
       pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
     };
-  },[]);
+  }, [sessionId]);
 
   return (
     <Link
@@ -68,7 +76,11 @@ const FriendRequestsSideBarOptions: FC<FriendRequestsSideBarOptionsProps> = ({
         <User className="h-4 w-4" />
       </div>
       <p className="truncate">Check Incoming Requests</p>
-     
+      {unseenRequestsCount > 0 ? (
+        <div className="rounded-full w-5 h-5 text-xs flex justify-center items-center text-white bg-indigo-600">
+          {unseenRequestsCount}
+        </div>
+      ) : null}
     </Link>
   );
 };

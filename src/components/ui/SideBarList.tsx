@@ -24,19 +24,22 @@ interface ExtendedMessage extends Message {
 const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
   const pathname = usePathname();
   const [unseenMsg, setUnseenMsg] = useState<Message[]>([]);
+  const [friendLists , setFriendsList] = useState<RUser[]>(friendList)
+
   
 
   useEffect(() => {
     pusherClient.subscribe(toPusherKey(`user:${sessionID}:chats`));
     pusherClient.subscribe(toPusherKey(`user:${sessionID}:friends`));
 
-    const newFriendHandler = async (sender : RUser) => {
+    const newFriendHandler = async (user : RUser) => {
+      setFriendsList((prev) => [...prev , user])
       setTimeout(() => {
         toast.custom((t) => {
           return (
             <div className="bg-white rounded-2xl flex align-center justify-center p-3 shadow ">
               <span className="font-semibold text-indigo-600">
-                {sender.name}
+                {user.name}
                 </span>
                 <span className="ml-2">
                   accepted your friend request !!
@@ -44,17 +47,17 @@ const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
             </div>
           )
         })
-        location.reload();
-      } , 5000)
+      } , 8000)
       
     };
 
     const chatHandler = (message: ExtendedMessage) => {
+      console.log(message)
       const shouldNotify =
         pathname !==
         `/dashboard/chat/${chatHrefConstructor(sessionID, message.senderId)}`;
       if (!shouldNotify) return;
-      toast.custom((t) => (
+       toast.custom((t) => (
         <ToastComponent
           sessionId={sessionID}
           senderId={message.senderId}
@@ -78,7 +81,7 @@ const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
       pusherClient.unbind("new_message", chatHandler);
       pusherClient.unbind("new_friend", newFriendHandler);
     };
-  }, [sessionID]);
+  }, [sessionID , pathname]);
 
   
 
@@ -92,7 +95,7 @@ const SideBarList: FC<SideBarListProps> = ({ friendList, sessionID }) => {
 
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-      {friendList.map((friend) => {
+      {friendLists.map((friend) => {
         const unseenMsgCount = unseenMsg.filter((unseenMsg) => {
           return unseenMsg.senderId === friend.id;
         }).length;
